@@ -21,47 +21,53 @@ echo ==================================================
 echo              BIG WALK MOD MANAGER
 echo ==================================================
 echo.
-echo   1. Install or update BigDart
-echo   2. Install or update BigYeet
-echo   3. Install or update BOTH mods
+echo   1. Install or update BigYeet + Mystery Mod
 echo.
-echo   4. Uninstall BigDart
-echo   5. Uninstall BigYeet
-echo   6. Remove ALL mods and BepInEx
+echo   2. Uninstall BigYeet + Mystery Mod
+echo   3. Remove ALL mods and BepInEx
 echo.
-echo   7. Check mod status
-echo   8. Launch Big Walk
+echo   4. Check mod status
+echo   5. Launch Big Walk
 echo   0. Exit
 echo.
-choice /C 123456780 /N /M "Choose an option: "
+choice /C 123450 /N /M "Choose an option: "
 set "CHOICE=%errorlevel%"
 
-if "%CHOICE%"=="1" call :RUN_SCRIPT Install-BigDart.ps1
-if "%CHOICE%"=="2" call :RUN_SCRIPT Install-BigYeet.ps1
-if "%CHOICE%"=="3" call :INSTALL_BOTH
-if "%CHOICE%"=="4" call :RUN_SCRIPT Uninstall-BigDart.ps1
-if "%CHOICE%"=="5" call :RUN_SCRIPT Uninstall-BigYeet.ps1
-if "%CHOICE%"=="6" call :RUN_SCRIPT Uninstall-AllModsAndBepInEx.ps1
-if "%CHOICE%"=="7" call :RUN_SCRIPT Get-ModStatus.ps1
-if "%CHOICE%"=="8" start "" "steam://run/1478500"
-if "%CHOICE%"=="9" exit /b 0
+if "%CHOICE%"=="1" call :INSTALL_SURPRISE_PACK
+if "%CHOICE%"=="2" call :UNINSTALL_SURPRISE_PACK
+if "%CHOICE%"=="3" call :RUN_SCRIPT Uninstall-AllModsAndBepInEx.ps1
+if "%CHOICE%"=="4" call :RUN_SCRIPT Get-ModStatus.ps1
+if "%CHOICE%"=="5" start "" "steam://run/1478500"
+if "%CHOICE%"=="6" exit /b 0
 
-if not "%CHOICE%"=="8" (
+if not "%CHOICE%"=="5" (
     echo.
     pause
 )
 goto MENU
 
-:INSTALL_BOTH
-call :DOWNLOAD_FILES Install-BigDart.ps1
-if errorlevel 1 exit /b 1
+:INSTALL_SURPRISE_PACK
 call :DOWNLOAD_FILES Install-BigYeet.ps1
 if errorlevel 1 exit /b 1
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\Install-BigDart.ps1" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
+call :DOWNLOAD_FILES Install-BigDart.ps1
 if errorlevel 1 exit /b 1
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\Install-BigYeet.ps1" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
+if errorlevel 1 exit /b 1
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\Install-BigDart.ps1" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
+exit /b %errorlevel%
+
+:UNINSTALL_SURPRISE_PACK
+call :DOWNLOAD_FILES Uninstall-BigYeet.ps1
+if errorlevel 1 exit /b 1
+call :DOWNLOAD_FILES Uninstall-BigDart.ps1
+if errorlevel 1 exit /b 1
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\Uninstall-BigYeet.ps1" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
+if errorlevel 1 exit /b 1
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\Uninstall-BigDart.ps1" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
 exit /b %errorlevel%
 
 :RUN_SCRIPT

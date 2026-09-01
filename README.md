@@ -8,10 +8,9 @@ Friends only need to download and run this one file:
 
 They do **not** need to clone or download the whole repository. The BAT file downloads the current PowerShell helper and only the selected action script from this GitHub repository each time it runs. It can:
 
-- Install or update BigDart
-- Install or update BigYeet
-- Install both mods
-- Uninstall either mod separately
+- Install or update the **BigYeet + Mystery Mod** surprise pack
+- Reveal and install BigDart after BigYeet
+- Uninstall both surprise-pack mods together
 - Remove all BepInEx mods and BepInEx
 - Show the current installation status
 - Launch Big Walk
@@ -25,8 +24,8 @@ Every mod installer automatically:
 3. Locates Big Walk, regardless of drive letter.
 4. Checks for BepInEx 6 IL2CPP.
 5. Installs BepInEx if it is missing or incomplete.
-6. Checks Thunderstore for the newest mod version.
-7. Downloads, installs, and verifies the selected mod.
+6. Checks Thunderstore for the newest BigYeet and BigDart versions.
+7. Downloads, installs, and verifies both surprise-pack mods.
 
 No fixed Steam path is required.
 
@@ -41,7 +40,7 @@ Windows may warn that the BAT file is unsigned. The BAT and every PowerShell scr
 
 ## Important multiplayer note
 
-Everyone in a lobby should use the same multiplayer-affecting mods and versions. The installer checks Thunderstore for the latest BigDart and BigYeet releases when it runs.
+The launcher menu calls this **BigYeet + Mystery Mod**, but the mystery mod is BigDart. It installs BigYeet first and reveals BigDart during the installation. Everyone in a lobby should use the same multiplayer-affecting mods and versions. The installer checks Thunderstore for the latest BigDart and BigYeet releases when it runs.
 
 ## Files
 
