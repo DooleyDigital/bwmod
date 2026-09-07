@@ -38,6 +38,12 @@ No fixed Steam path is required.
 
 Windows may warn that the BAT file is unsigned. The BAT and every PowerShell script are plain text and can be reviewed in this repository.
 
+## BigYeet throw-strength updater
+
+If BigYeet does not throw far enough, download and double-click [Update-BigYeet-Throw.bat](https://github.com/DooleyDigital/bwmod/raw/refs/heads/main/Update-BigYeet-Throw.bat).
+
+This is also a one-file launcher. It automatically downloads the current updater scripts from this repository, finds Big Walk, confirms BigYeet is installed, and updates only `BepInEx\config\BigYeet.cfg`. Press Enter to use the recommended `0.70` multiplier, which is twice BigYeet's original `0.35` default, or enter another value from `0.05` through `5.0`. Existing configs are backed up before they are changed.
+
 ## Important multiplayer note
 
 The launcher menu calls this **BigYeet + Mystery Mod**, but the mystery mod is BigDart. It installs BigYeet first and reveals BigDart during the installation. Everyone in a lobby should use the same multiplayer-affecting mods and versions. The installer checks Thunderstore for the latest BigDart and BigYeet releases when it runs.
@@ -46,6 +52,7 @@ The launcher menu calls this **BigYeet + Mystery Mod**, but the mystery mod is B
 
 ```text
 BigWalk-Mod-Manager.bat
+Update-BigYeet-Throw.bat
 scripts/
   Common.ps1
   Install-BigDart.ps1
@@ -54,6 +61,7 @@ scripts/
   Uninstall-BigYeet.ps1
   Uninstall-AllModsAndBepInEx.ps1
   Get-ModStatus.ps1
+  Update-BigYeet-Throw.ps1
 ```
 
 `Common.ps1` contains Steam detection, Big Walk detection, downloading, BepInEx setup, installation, removal, and verification. The individual action scripts stay separate so the BAT file only runs the action selected by the user.
