@@ -59,14 +59,16 @@ echo ==================================================
 echo             SELECT MODS TO INSTALL
 echo ==================================================
 echo.
-echo Toggle any mod, then press I to install the checked mods.
-echo BigYeet and BigDart are checked by default but are optional.
+echo Press 1-5 to toggle each mod on or off.
+echo [X] = WILL INSTALL       [ ] = WILL NOT INSTALL
+echo When the list looks right, press I to continue.
+echo BigYeet and BigDart start selected but can be turned off.
 echo.
-echo   1. [!MARK_YEET!] BigYeet
-echo   2. [!MARK_DART!] BigDart
-echo   3. [!MARK_TELEPORT!] BigTeleport
-echo   4. [!MARK_FIREWORK!] BigFirework
-echo   5. [!MARK_MINIMAP!] Mady's MiniMap
+echo   1. [!MARK_YEET!] BigYeet         - Charged player throws
+echo   2. [!MARK_DART!] BigDart         - Darts and smoke effects
+echo   3. [!MARK_TELEPORT!] BigTeleport     - Map and puzzle teleporting
+echo   4. [!MARK_FIREWORK!] BigFirework     - Host firework shows
+echo   5. [!MARK_MINIMAP!] Mady's MiniMap  - Map, minimap and waypoints
 echo.
 echo   I. Install or update checked mods
 echo   0. Back
@@ -107,7 +109,9 @@ echo ==================================================
 echo            SELECT MODS TO UNINSTALL
 echo ==================================================
 echo.
-echo Toggle the mods to remove, then press U.
+echo Press 1-5 to toggle each mod on or off.
+echo [X] = WILL REMOVE        [ ] = WILL KEEP
+echo When the list looks right, press U to continue.
 echo BepInEx and unselected mods will remain installed.
 echo.
 echo   1. [!MARK_YEET!] BigYeet
@@ -177,21 +181,24 @@ exit /b 0
 :RUN_SELECTION
 set "SELECTION_ACTION=%~1"
 set "SELECTION_MODS=%~2"
-call :DOWNLOAD_FILES Manage-SelectedMods.ps1
-if errorlevel 1 exit /b 1
+if not exist "%BIGWALK_TEMP_DIR%" mkdir "%BIGWALK_TEMP_DIR%" >nul 2>&1
+
+echo.
+echo Downloading the latest mod manager scripts from GitHub...
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command "$ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -UseBasicParsing -Uri ($env:BIGWALK_RAW_BASE + '/scripts/Common.ps1') -OutFile (Join-Path $env:BIGWALK_TEMP_DIR 'Common.ps1'); Invoke-WebRequest -UseBasicParsing -Uri ($env:BIGWALK_RAW_BASE + '/scripts/Manage-SelectedMods.ps1') -OutFile (Join-Path $env:BIGWALK_TEMP_DIR 'Manage-SelectedMods.ps1')"
+
+if errorlevel 1 (
+    echo.
+    echo ERROR: The scripts could not be downloaded from GitHub.
+    echo Check your internet connection and try again.
+    exit /b 1
+)
 
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\Manage-SelectedMods.ps1" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1" -Action "%SELECTION_ACTION%" -Mods "%SELECTION_MODS%"
 exit /b !errorlevel!
 
 :RUN_SCRIPT
-set "ACTION_SCRIPT=%~1"
-call :DOWNLOAD_FILES "%ACTION_SCRIPT%"
-if errorlevel 1 exit /b 1
-
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\%ACTION_SCRIPT%" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
-exit /b !errorlevel!
-
-:DOWNLOAD_FILES
 set "ACTION_SCRIPT=%~1"
 if not exist "%BIGWALK_TEMP_DIR%" mkdir "%BIGWALK_TEMP_DIR%" >nul 2>&1
 
@@ -207,4 +214,5 @@ if errorlevel 1 (
     exit /b 1
 )
 
-exit /b 0
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%BIGWALK_TEMP_DIR%\%ACTION_SCRIPT%" -CommonPath "%BIGWALK_TEMP_DIR%\Common.ps1"
+exit /b !errorlevel!

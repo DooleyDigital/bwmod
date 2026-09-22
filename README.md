@@ -20,13 +20,15 @@ They do **not** need to clone or download the whole repository. The BAT file dow
 
 | Mod | Install-menu default | Notes |
 | --- | --- | --- |
-| BigYeet | Checked | Charged player throws and kicks |
+| BigYeet | Checked | Charged player throws and kicks; installs with the `0.70` throw multiplier |
 | BigDart | Checked | Darts, smoke effects, and a temporary speed boost |
 | BigTeleport | Unchecked | Teleport to the map room or completed puzzle gourds |
 | BigFirework | Unchecked | Host-synchronized firework shows; required support mods install automatically |
 | Mady's MiniMap | Unchecked | Full map, minimap, waypoints, and searchable locations |
 
 Every entry is optional. Toggle the checkboxes in the BAT menu before installing.
+
+The selection screen explains that `[X]` means the mod will be installed and `[ ]` means it will be skipped. Press keys `1` through `5` to toggle the entries, then press `I` to install everything marked `[X]`.
 
 ## Automatic setup
 
@@ -59,7 +61,7 @@ Windows may warn that the BAT file is unsigned. The BAT and every PowerShell scr
 
 If BigYeet does not throw far enough, download and double-click [Update-BigYeet-Throw.bat](https://github.com/DooleyDigital/bwmod/raw/refs/heads/main/Update-BigYeet-Throw.bat).
 
-This is also a one-file launcher. It automatically downloads the current updater scripts from this repository, finds Big Walk, confirms BigYeet is installed, and updates only `BepInEx\config\BigYeet.cfg`. Press Enter to use the recommended `0.70` multiplier, which is twice BigYeet's original `0.35` default, or enter another value from `0.05` through `5.0`. Existing configs are backed up before they are changed.
+This is also a one-file launcher. It automatically downloads the current updater scripts from this repository, finds Big Walk, confirms BigYeet is installed, and updates only `BepInEx\config\BigYeet.cfg`. Press Enter to use the recommended `0.70` multiplier, which is twice BigYeet's original `0.35` default, or enter another value from `0.05` through `5.0`. Existing configs are backed up before they are changed. The regular BigYeet installer now applies `0.70` automatically too.
 
 ## Important multiplayer note
 

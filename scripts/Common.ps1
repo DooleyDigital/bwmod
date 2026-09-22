@@ -343,6 +343,103 @@ function Install-ThunderstoreMod {
     }
 }
 
+function Set-BigYeetThrowMultiplier {
+    param(
+        [ValidateRange(0.05, 5.0)][double]$ForceMultiplier = 0.70,
+        [switch]$CreateBackup
+    )
+
+    $gameFolder = Find-BigWalkFolder
+    $pluginsFolder = Join-Path $gameFolder 'BepInEx\plugins'
+    $bigYeetDll = $null
+
+    if (Test-Path -LiteralPath $pluginsFolder) {
+        $bigYeetDll = Get-ChildItem -LiteralPath $pluginsFolder -Filter 'BigYeet.dll' -File -Recurse -ErrorAction SilentlyContinue |
+            Select-Object -First 1
+    }
+
+    if (-not $bigYeetDll) {
+        throw 'BigYeet is not installed. Install BigYeet before changing its throw multiplier.'
+    }
+
+    $configFolder = Join-Path $gameFolder 'BepInEx\config'
+    $configFile = Join-Path $configFolder 'BigYeet.cfg'
+    New-Item -ItemType Directory -Path $configFolder -Force | Out-Null
+
+    $backupFile = $null
+    $lines = @()
+    if (Test-Path -LiteralPath $configFile) {
+        if ($CreateBackup) {
+            $backupFile = "$configFile.backup-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+            Copy-Item -LiteralPath $configFile -Destination $backupFile -Force
+        }
+        $lines = @(Get-Content -LiteralPath $configFile -ErrorAction Stop)
+    }
+
+    $formattedValue = $ForceMultiplier.ToString(
+        '0.00###',
+        [Globalization.CultureInfo]::InvariantCulture
+    )
+    $replacement = "ForceMultiplier = $formattedValue"
+    $updatedLines = New-Object 'System.Collections.Generic.List[string]'
+    $insideThrowing = $false
+    $throwingSectionFound = $false
+    $forceKeyWritten = $false
+    $oldValue = $null
+
+    foreach ($line in $lines) {
+        if ($line -match '^\s*\[([^]]+)\]\s*$') {
+            if ($insideThrowing -and -not $forceKeyWritten) {
+                $updatedLines.Add($replacement)
+                $forceKeyWritten = $true
+            }
+
+            $insideThrowing = ($Matches[1] -ieq 'Throwing')
+            if ($insideThrowing) {
+                $throwingSectionFound = $true
+            }
+
+            $updatedLines.Add($line)
+            continue
+        }
+
+        if ($insideThrowing -and $line -match '^\s*ForceMultiplier\s*=\s*(.*?)\s*$') {
+            if ($null -eq $oldValue) {
+                $oldValue = $Matches[1]
+            }
+            $updatedLines.Add($replacement)
+            $forceKeyWritten = $true
+            continue
+        }
+
+        $updatedLines.Add($line)
+    }
+
+    if ($insideThrowing -and -not $forceKeyWritten) {
+        $updatedLines.Add($replacement)
+        $forceKeyWritten = $true
+    }
+
+    if (-not $throwingSectionFound) {
+        if ($updatedLines.Count -gt 0 -and $updatedLines[$updatedLines.Count - 1] -ne '') {
+            $updatedLines.Add('')
+        }
+        $updatedLines.Add('[Throwing]')
+        $updatedLines.Add($replacement)
+    }
+
+    $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllLines($configFile, [string[]]$updatedLines, $utf8WithoutBom)
+
+    return [pscustomobject]@{
+        GameFolder = $gameFolder
+        ConfigFile = $configFile
+        BackupFile = $backupFile
+        OldValue = $oldValue
+        NewValue = $formattedValue
+    }
+}
+
 function Uninstall-BigWalkMod {
     param(
         [Parameter(Mandatory = $true)][string]$Name,

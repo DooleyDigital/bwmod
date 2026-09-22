@@ -32,6 +32,8 @@ try {
             switch ($selectedMod) {
                 'BigYeet' {
                     Install-ThunderstoreMod -Name 'BigYeet' -Namespace 'hsiddaz' -DllName 'BigYeet.dll' -FallbackVersion '1.1.0'
+                    $throwConfig = Set-BigYeetThrowMultiplier -ForceMultiplier 0.70 -CreateBackup
+                    Write-Host "[OK] BigYeet throw multiplier set to $($throwConfig.NewValue)" -ForegroundColor Green
                 }
                 'BigDart' {
                     Install-ThunderstoreMod -Name 'BigDart' -Namespace 'hsiddaz' -DllName 'BigDart.dll' -FallbackVersion '1.1.0'
