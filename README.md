@@ -8,12 +8,25 @@ Friends only need to download and run this one file:
 
 They do **not** need to clone or download the whole repository. The BAT file downloads the current PowerShell helper and only the selected action script from this GitHub repository each time it runs. It can:
 
-- Install or update the **BigYeet + Mystery Mod** surprise pack
-- Reveal and install BigDart after BigYeet
-- Uninstall both surprise-pack mods together
+- Let the user check exactly which mods to install or update
+- Let the user check exactly which mods to uninstall
+- Preselect BigYeet and BigDart as the recommended default pair while keeping both optional
+- Install BigTeleport, BigFirework, and Mady's MiniMap when selected
 - Remove all BepInEx mods and BepInEx
 - Show the current installation status
 - Launch Big Walk
+
+## Included mods
+
+| Mod | Install-menu default | Notes |
+| --- | --- | --- |
+| BigYeet | Checked | Charged player throws and kicks |
+| BigDart | Checked | Darts, smoke effects, and a temporary speed boost |
+| BigTeleport | Unchecked | Teleport to the map room or completed puzzle gourds |
+| BigFirework | Unchecked | Host-synchronized firework shows; required support mods install automatically |
+| Mady's MiniMap | Unchecked | Full map, minimap, waypoints, and searchable locations |
+
+Every entry is optional. Toggle the checkboxes in the BAT menu before installing.
 
 ## Automatic setup
 
@@ -24,8 +37,12 @@ Every mod installer automatically:
 3. Locates Big Walk, regardless of drive letter.
 4. Checks for BepInEx 6 IL2CPP.
 5. Installs BepInEx if it is missing or incomplete.
-6. Checks Thunderstore for the newest BigYeet and BigDart versions.
-7. Downloads, installs, and verifies both surprise-pack mods.
+6. Checks Thunderstore for the newest selected mod versions.
+7. Downloads, installs, and verifies only the selected mods.
+
+Selecting BigFirework also installs or updates its required ModSettingsMenu and BigWalkLocalizationAPI dependencies. BepInEx is checked and installed automatically for every mod.
+
+Uninstalling BigFirework leaves those shared support mods in place in case another mod needs them. The **Remove ALL mods and BepInEx** option removes everything.
 
 No fixed Steam path is required.
 
@@ -46,7 +63,7 @@ This is also a one-file launcher. It automatically downloads the current updater
 
 ## Important multiplayer note
 
-The launcher menu calls this **BigYeet + Mystery Mod**, but the mystery mod is BigDart. It installs BigYeet first and reveals BigDart during the installation. Everyone in a lobby should use the same multiplayer-affecting mods and versions. The installer checks Thunderstore for the latest BigDart and BigYeet releases when it runs.
+Everyone in a lobby should use the same multiplayer-affecting mods and versions. The installer checks Thunderstore for the newest release of each selected mod when it runs.
 
 ## Files
 
@@ -57,6 +74,7 @@ scripts/
   Common.ps1
   Install-BigDart.ps1
   Install-BigYeet.ps1
+  Manage-SelectedMods.ps1
   Uninstall-BigDart.ps1
   Uninstall-BigYeet.ps1
   Uninstall-AllModsAndBepInEx.ps1
@@ -64,12 +82,15 @@ scripts/
   Update-BigYeet-Throw.ps1
 ```
 
-`Common.ps1` contains Steam detection, Big Walk detection, downloading, BepInEx setup, installation, removal, and verification. The individual action scripts stay separate so the BAT file only runs the action selected by the user.
+`Common.ps1` contains Steam detection, Big Walk detection, downloading, BepInEx setup, installation, removal, and verification. `Manage-SelectedMods.ps1` receives the checkbox selections from the BAT menu and runs only those actions.
 
 ## Sources
 
 - [BigDart on Thunderstore](https://thunderstore.io/c/big-walk/p/hsiddaz/BigDart/)
 - [BigYeet on Thunderstore](https://thunderstore.io/c/big-walk/p/hsiddaz/BigYeet/)
+- [BigTeleport on Thunderstore](https://thunderstore.io/c/big-walk/p/markviews/BigTeleport/)
+- [BigFirework on Thunderstore](https://thunderstore.io/c/big-walk/p/Trifocals/BigFirework/)
+- [Mady's MiniMap on Thunderstore](https://thunderstore.io/c/big-walk/p/AdamMady/Madys_MiniMap/)
 - [BepInEx builds](https://builds.bepinex.dev/projects/bepinex_be)
 
-This is an unofficial community utility. Big Walk, BepInEx, Thunderstore, BigDart, and BigYeet belong to their respective owners.
+This is an unofficial community utility. Big Walk, BepInEx, Thunderstore, and all listed mods belong to their respective owners.

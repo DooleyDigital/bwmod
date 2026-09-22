@@ -269,7 +269,8 @@ function Install-ThunderstoreMod {
         [Parameter(Mandatory = $true)][string]$Name,
         [Parameter(Mandatory = $true)][string]$Namespace,
         [Parameter(Mandatory = $true)][string]$DllName,
-        [Parameter(Mandatory = $true)][string]$FallbackVersion
+        [Parameter(Mandatory = $true)][string]$FallbackVersion,
+        [string[]]$ReplacePluginPaths = @()
     )
 
     Write-BigWalkHeader -Title "Install or update $Name"
@@ -303,11 +304,29 @@ function Install-ThunderstoreMod {
         Get-ChildItem -LiteralPath $pluginsFolder -Filter $DllName -File -Recurse -ErrorAction SilentlyContinue |
             Remove-Item -Force -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $destinationFolder -Recurse -Force -ErrorAction SilentlyContinue
-        New-Item -ItemType Directory -Path $destinationFolder -Force | Out-Null
 
-        Copy-Item -Path (Join-Path $dllFile.Directory.FullName '*') -Destination $destinationFolder -Recurse -Force
+        foreach ($relativePath in $ReplacePluginPaths) {
+            $existingPath = Join-Path $pluginsFolder $relativePath
+            Remove-Item -LiteralPath $existingPath -Recurse -Force -ErrorAction SilentlyContinue
+        }
 
-        $installedDll = Get-ChildItem -LiteralPath $destinationFolder -Filter $DllName -File -Recurse -ErrorAction SilentlyContinue |
+        $packagePlugins = @(
+            (Join-Path $extractFolder 'BepInEx\plugins'),
+            (Join-Path $extractFolder 'plugins')
+        ) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+
+        if ($packagePlugins) {
+            # Preserve the package's intended layout. Some mods require assets
+            # to remain directly under BepInEx\plugins.
+            Copy-Item -Path (Join-Path $packagePlugins '*') -Destination $pluginsFolder -Recurse -Force
+        }
+        else {
+            # Older/simple packages place the DLL at the archive root.
+            New-Item -ItemType Directory -Path $destinationFolder -Force | Out-Null
+            Copy-Item -Path (Join-Path $dllFile.Directory.FullName '*') -Destination $destinationFolder -Recurse -Force
+        }
+
+        $installedDll = Get-ChildItem -LiteralPath $pluginsFolder -Filter $DllName -File -Recurse -ErrorAction SilentlyContinue |
             Select-Object -First 1
         if (-not $installedDll) {
             throw "$Name installation could not be verified."
@@ -327,7 +346,9 @@ function Install-ThunderstoreMod {
 function Uninstall-BigWalkMod {
     param(
         [Parameter(Mandatory = $true)][string]$Name,
-        [Parameter(Mandatory = $true)][string]$DllName
+        [Parameter(Mandatory = $true)][string]$DllName,
+        [string[]]$AdditionalPluginPaths = @(),
+        [string[]]$ConfigPatterns = @()
     )
 
     Write-BigWalkHeader -Title "Uninstall $Name"
@@ -350,12 +371,26 @@ function Uninstall-BigWalkMod {
             Remove-Item -LiteralPath $legacyDll.FullName -Force
             $removed = $true
         }
+
+        foreach ($relativePath in $AdditionalPluginPaths) {
+            $installedPath = Join-Path $pluginsFolder $relativePath
+            if (Test-Path -LiteralPath $installedPath) {
+                Remove-Item -LiteralPath $installedPath -Recurse -Force
+                $removed = $true
+            }
+        }
     }
 
     $configFolder = Join-Path $gameFolder 'BepInEx\config'
     if (Test-Path -LiteralPath $configFolder) {
-        Get-ChildItem -LiteralPath $configFolder -Filter "*$Name*" -File -Recurse -ErrorAction SilentlyContinue |
-            Remove-Item -Force -ErrorAction SilentlyContinue
+        if ($ConfigPatterns.Count -eq 0) {
+            $ConfigPatterns = @("*$Name*")
+        }
+
+        foreach ($configPattern in $ConfigPatterns) {
+            Get-ChildItem -LiteralPath $configFolder -Filter $configPattern -File -Recurse -ErrorAction SilentlyContinue |
+                Remove-Item -Force -ErrorAction SilentlyContinue
+        }
     }
 
     if ($removed) {
@@ -438,8 +473,11 @@ function Show-BigWalkModStatus {
 
     $pluginsFolder = Join-Path $gameFolder 'BepInEx\plugins'
     foreach ($mod in @(
+        @{ Name = 'BigYeet'; Dll = 'BigYeet.dll' },
         @{ Name = 'BigDart'; Dll = 'BigDart.dll' },
-        @{ Name = 'BigYeet'; Dll = 'BigYeet.dll' }
+        @{ Name = 'BigTeleport'; Dll = 'BigTeleport.dll' },
+        @{ Name = 'BigFirework'; Dll = 'BigFirework.dll' },
+        @{ Name = "Mady's MiniMap"; Dll = 'AdamMady_Minimap.dll' }
     )) {
         $found = $null
         if (Test-Path -LiteralPath $pluginsFolder) {
