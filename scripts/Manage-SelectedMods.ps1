@@ -9,7 +9,11 @@ $ErrorActionPreference = 'Stop'
 try {
     . $CommonPath
 
-    $allowedMods = @('BigYeet', 'BigDart', 'BigTeleport', 'BigFirework', 'Madys_MiniMap')
+    $allowedMods = @(
+        'BigYeet', 'BigDart', 'BigTeleport', 'BigFirework', 'Madys_MiniMap',
+        'NoClip', 'Better_Trains', 'QuickBelt', 'Item_Debug', 'Big_Run',
+        'MapParachute', 'TeleportToPlayer', 'BigBack', 'Madys_HideNSeek'
+    )
     $selectedMods = @(
         $Mods.Split(',') |
             ForEach-Object { $_.Trim() } |
@@ -58,6 +62,37 @@ try {
                         -FallbackVersion '1.1.2' `
                         -ReplacePluginPaths @('MapAssets', 'StbImageSharp.dll')
                 }
+                'NoClip' {
+                    Install-ThunderstoreMod -Name 'NoClip' -Namespace 'jangles' -DllName 'BigWalk.NoClip.dll' -FallbackVersion '1.0.4'
+                }
+                'Better_Trains' {
+                    Install-ThunderstoreMod -Name 'Better_Trains' -Namespace 'BayTurtleKing' -DllName 'BetterTrain.dll' -FallbackVersion '1.0.1'
+                }
+                'QuickBelt' {
+                    Install-ThunderstoreMod -Name 'QuickBelt' -Namespace 'hsiddaz' -DllName 'QuickBelt.dll' -FallbackVersion '1.0.1'
+                }
+                'Item_Debug' {
+                    Install-ThunderstoreMod -Name 'Item_Debug' -Namespace 'SixSevenBrigade' -DllName 'GearDebug.dll' -FallbackVersion '1.1.4'
+                }
+                'Big_Run' {
+                    Install-ThunderstoreMod -Name 'Big_Run' -Namespace 'BayTurtleKing' -DllName 'BigRun.dll' -FallbackVersion '1.0.3'
+                }
+                'MapParachute' {
+                    Install-ThunderstoreMod -Name 'MapParachute' -Namespace 'gogogadgetjustice' -DllName 'Parachute Map.dll' -FallbackVersion '1.0.0'
+                }
+                'TeleportToPlayer' {
+                    Install-ThunderstoreMod -Name 'TeleportToPlayer' -Namespace 'YonahG0y' -DllName 'TeleportToPlayer.dll' -FallbackVersion '0.2.0'
+                }
+                'BigBack' {
+                    Write-Host ''
+                    Write-Host 'BigBack requires gugger Core.' -ForegroundColor Yellow
+                    Write-Host 'Installing or updating that support mod automatically...' -ForegroundColor Yellow
+                    Install-ThunderstoreMod -Name 'Core' -Namespace 'gugger' -DllName 'smolMods.Core.dll' -FallbackVersion '1.0.10'
+                    Install-ThunderstoreMod -Name 'BigBack' -Namespace 'gugger' -DllName 'smolMods.BigBack.dll' -FallbackVersion '1.0.1'
+                }
+                'Madys_HideNSeek' {
+                    Install-ThunderstoreMod -Name 'Madys_HideNSeek' -Namespace 'AdamMady' -DllName 'Madys_HideNSeek.dll' -FallbackVersion '1.0.1'
+                }
             }
         }
         else {
@@ -81,10 +116,41 @@ try {
                         -AdditionalPluginPaths @('MapAssets', 'StbImageSharp.dll') `
                         -ConfigPatterns @('*AdamMady*Minimap*', '*Mady*MiniMap*')
                 }
+                'NoClip' {
+                    Uninstall-BigWalkMod -Name 'NoClip' -DllName 'BigWalk.NoClip.dll'
+                }
+                'Better_Trains' {
+                    Uninstall-BigWalkMod -Name 'Better_Trains' -DllName 'BetterTrain.dll' -ConfigPatterns @('*Better*Train*')
+                }
+                'QuickBelt' {
+                    Uninstall-BigWalkMod -Name 'QuickBelt' -DllName 'QuickBelt.dll'
+                }
+                'Item_Debug' {
+                    Uninstall-BigWalkMod -Name 'Item_Debug' -DllName 'GearDebug.dll' -ConfigPatterns @('*geardebug*', '*Item*Debug*')
+                }
+                'Big_Run' {
+                    Uninstall-BigWalkMod -Name 'Big_Run' -DllName 'BigRun.dll' -ConfigPatterns @('*BigRun*', '*Big_Run*')
+                }
+                'MapParachute' {
+                    Uninstall-BigWalkMod -Name 'MapParachute' -DllName 'Parachute Map.dll' -ConfigPatterns @('*parachute*')
+                }
+                'TeleportToPlayer' {
+                    Uninstall-BigWalkMod -Name 'TeleportToPlayer' -DllName 'TeleportToPlayer.dll'
+                }
+                'BigBack' {
+                    Uninstall-BigWalkMod -Name 'BigBack' -DllName 'smolMods.BigBack.dll'
+                }
+                'Madys_HideNSeek' {
+                    Uninstall-BigWalkMod -Name 'Madys_HideNSeek' -DllName 'Madys_HideNSeek.dll'
+                }
             }
         }
     }
 
+    $controls = Write-BigWalkControlsNote
+    Write-Host ''
+    Write-Host "[OK] Controls note updated: $($controls.NotePath)" -ForegroundColor Green
+    Write-Host "[OK] Desktop shortcut updated: $($controls.ShortcutPath)" -ForegroundColor Green
     Write-Host ''
     Write-Host "[OK] Selected mod $($Action.ToLower()) actions completed" -ForegroundColor Green
     exit 0

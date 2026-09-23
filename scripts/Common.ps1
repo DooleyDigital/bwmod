@@ -553,6 +553,142 @@ function Uninstall-AllBigWalkModsAndBepInEx {
 
     Write-Host ''
     Write-Host '[OK] All BepInEx mods and BepInEx were removed' -ForegroundColor Green
+    $controls = Write-BigWalkControlsNote
+    Write-Host "[OK] Controls note updated: $($controls.NotePath)" -ForegroundColor Green
+    Write-Host "[OK] Desktop shortcut updated: $($controls.ShortcutPath)" -ForegroundColor Green
+}
+
+function Write-BigWalkControlsNote {
+    $gameFolder = Find-BigWalkFolder
+    $pluginsFolder = Join-Path $gameFolder 'BepInEx\plugins'
+    $catalog = @(
+        @{ Name = 'BigYeet'; Dll = 'BigYeet.dll'; Controls = @(
+            'Hold Right Mouse while carrying a player to charge a throw.',
+            'Release Right Mouse to throw the player.',
+            'Hold F to charge a kick.'
+        ) },
+        @{ Name = 'BigDart'; Dll = 'BigDart.dll'; Controls = @(
+            'C: Light a dart.',
+            'Hold Right Mouse: Drag the dart.'
+        ) },
+        @{ Name = 'BigTeleport'; Dll = 'BigTeleport.dll'; Controls = @(
+            'Type map in chat to teleport to the map room.',
+            'Click a completed puzzle gourd to teleport to that puzzle.'
+        ) },
+        @{ Name = 'BigFirework'; Dll = 'BigFirework.dll'; Controls = @(
+            'F10: Start or toggle the host firework show.',
+            'The physical launcher buttons also control the show.'
+        ) },
+        @{ Name = "Mady's MiniMap"; Dll = 'AdamMady_Minimap.dll'; Controls = @(
+            'M: Open or close the full map.',
+            'Left-drag: Move the full map.',
+            'Right-click: Place a waypoint.',
+            'Left-click a waypoint: Hide it.',
+            'Mouse wheel: Zoom.'
+        ) },
+        @{ Name = 'NoClip'; Dll = 'BigWalk.NoClip.dll'; Controls = @(
+            'N: Toggle noclip (host only).',
+            'W/A/S/D: Move; Space or E: Move up; Ctrl or Q: Move down.',
+            'Left Shift: Move faster.'
+        ) },
+        @{ Name = 'Better Trains'; Dll = 'BetterTrain.dll'; Controls = @(
+            'No keybind. Faster trains are applied automatically when you are the host.'
+        ) },
+        @{ Name = 'QuickBelt'; Dll = 'QuickBelt.dll'; Controls = @(
+            'B: Take an item from your belt.',
+            'B while holding the item: Return it to your belt.'
+        ) },
+        @{ Name = 'Item Debug'; Dll = 'GearDebug.dll'; Controls = @(
+            "Quote ('): Open the item debug panel.",
+            'F9: Fallback key to open the panel.'
+        ) },
+        @{ Name = 'Big Run'; Dll = 'BigRun.dll'; Controls = @(
+            'J: Toggle super speed and high jump.'
+        ) },
+        @{ Name = 'MapParachute'; Dll = 'Parachute Map.dll'; Controls = @(
+            'No new keybind. Open and lift the map over your head to glide.',
+            'Lower or consult the map to descend faster.'
+        ) },
+        @{ Name = 'TeleportToPlayer'; Dll = 'TeleportToPlayer.dll'; Controls = @(
+            'P: Teleport above a random player.',
+            'Press P again within 30 seconds to return.'
+        ) },
+        @{ Name = 'BigBack'; Dll = 'smolMods.BigBack.dll'; Controls = @(
+            'Open Settings, then sMods, then enable or configure Big Backpack.'
+        ) },
+        @{ Name = "Mady's HideNSeek"; Dll = 'Madys_HideNSeek.dll'; Controls = @(
+            'F9: Open or close the hide-and-seek menu.',
+            'F10: Set up a custom play area.'
+        ) }
+    )
+
+    $installedMods = @()
+    if (Test-Path -LiteralPath $pluginsFolder) {
+        foreach ($mod in $catalog) {
+            $found = Get-ChildItem -LiteralPath $pluginsFolder -Filter $mod.Dll -File -Recurse -ErrorAction SilentlyContinue |
+                Select-Object -First 1
+            if ($found) {
+                $installedMods += $mod
+            }
+        }
+    }
+
+    $documentsFolder = [Environment]::GetFolderPath('MyDocuments')
+    if (-not $documentsFolder) {
+        $documentsFolder = Join-Path $env:USERPROFILE 'Documents'
+    }
+    $desktopFolder = [Environment]::GetFolderPath('Desktop')
+    if (-not $desktopFolder) {
+        $desktopFolder = Join-Path $env:USERPROFILE 'Desktop'
+    }
+
+    New-Item -ItemType Directory -Path $documentsFolder -Force | Out-Null
+    New-Item -ItemType Directory -Path $desktopFolder -Force | Out-Null
+
+    $notePath = Join-Path $documentsFolder 'Big Walk Mod Controls.txt'
+    $shortcutPath = Join-Path $desktopFolder 'Big Walk Mod Controls.lnk'
+    $lines = New-Object 'System.Collections.Generic.List[string]'
+    $lines.Add('BIG WALK MOD CONTROLS')
+    $lines.Add('=====================')
+    $lines.Add('')
+    $lines.Add("Game folder: $gameFolder")
+    $lines.Add("Updated: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')")
+    $lines.Add('This list includes only mods currently detected as installed.')
+    $lines.Add('')
+
+    if ($installedMods.Count -eq 0) {
+        $lines.Add('No supported mods are currently detected.')
+    }
+    else {
+        foreach ($mod in $installedMods) {
+            $lines.Add($mod.Name.ToUpperInvariant())
+            $lines.Add(('-' * $mod.Name.Length))
+            foreach ($control in $mod.Controls) {
+                $lines.Add("- $control")
+            }
+            $lines.Add('')
+        }
+    }
+
+    $lines.Add('Tip: Mod settings and keybinds can change between releases. Check each mod page if a key stops working.')
+    $utf8WithoutBom = New-Object System.Text.UTF8Encoding($false)
+    [System.IO.File]::WriteAllLines($notePath, [string[]]$lines, $utf8WithoutBom)
+
+    $notepadPath = Join-Path $env:SystemRoot 'System32\notepad.exe'
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut($shortcutPath)
+    $shortcut.TargetPath = $notepadPath
+    $shortcut.Arguments = '"' + $notePath + '"'
+    $shortcut.WorkingDirectory = $documentsFolder
+    $shortcut.IconLocation = "$notepadPath,0"
+    $shortcut.Description = 'Big Walk installed mod controls and keybinds'
+    $shortcut.Save()
+
+    return [pscustomobject]@{
+        NotePath = $notePath
+        ShortcutPath = $shortcutPath
+        InstalledCount = $installedMods.Count
+    }
 }
 
 function Show-BigWalkModStatus {
@@ -574,7 +710,16 @@ function Show-BigWalkModStatus {
         @{ Name = 'BigDart'; Dll = 'BigDart.dll' },
         @{ Name = 'BigTeleport'; Dll = 'BigTeleport.dll' },
         @{ Name = 'BigFirework'; Dll = 'BigFirework.dll' },
-        @{ Name = "Mady's MiniMap"; Dll = 'AdamMady_Minimap.dll' }
+        @{ Name = "Mady's MiniMap"; Dll = 'AdamMady_Minimap.dll' },
+        @{ Name = 'NoClip'; Dll = 'BigWalk.NoClip.dll' },
+        @{ Name = 'Better Trains'; Dll = 'BetterTrain.dll' },
+        @{ Name = 'QuickBelt'; Dll = 'QuickBelt.dll' },
+        @{ Name = 'Item Debug'; Dll = 'GearDebug.dll' },
+        @{ Name = 'Big Run'; Dll = 'BigRun.dll' },
+        @{ Name = 'MapParachute'; Dll = 'Parachute Map.dll' },
+        @{ Name = 'TeleportToPlayer'; Dll = 'TeleportToPlayer.dll' },
+        @{ Name = 'BigBack'; Dll = 'smolMods.BigBack.dll' },
+        @{ Name = "Mady's HideNSeek"; Dll = 'Madys_HideNSeek.dll' }
     )) {
         $found = $null
         if (Test-Path -LiteralPath $pluginsFolder) {
@@ -590,4 +735,9 @@ function Show-BigWalkModStatus {
             Write-Host "[NOT INSTALLED] $($mod.Name)" -ForegroundColor DarkGray
         }
     }
+
+    $controls = Write-BigWalkControlsNote
+    Write-Host ''
+    Write-Host "[OK] Controls note updated: $($controls.NotePath)" -ForegroundColor Green
+    Write-Host "[OK] Desktop shortcut updated: $($controls.ShortcutPath)" -ForegroundColor Green
 }
