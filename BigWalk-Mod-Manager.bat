@@ -60,6 +60,7 @@ set "SEL_PARACHUTE=0"
 set "SEL_TELEPORTPLAYER=0"
 set "SEL_BIGBACK=0"
 set "SEL_HIDENSEEK=0"
+set "SEL_PERSONVIEW=0"
 exit /b 0
 
 :INSTALL_MENU
@@ -90,11 +91,12 @@ echo   B. [!MARK_PARACHUTE!] MapParachute      - Use the map as a parachute
 echo   C. [!MARK_TELEPORTPLAYER!] TeleportToPlayer  - Teleport to another player
 echo   D. [!MARK_BIGBACK!] BigBack           - Carry large items in slots
 echo   E. [!MARK_HIDENSEEK!] Mady's HideNSeek  - Host hide-and-seek mode
+echo   F. [!MARK_PERSONVIEW!] Big Person View   - Third-person and free camera
 echo.
 echo   I. INSTALL or update every mod marked [X]
 echo   0. Back
 echo.
-choice /C 123456789ABCDEI0 /N /M "Choose a mod key, I to install, or 0 to go back: "
+choice /C 123456789ABCDEFI0 /N /M "Choose a mod key, I to install, or 0 to go back: "
 set "SELECT_CHOICE=!errorlevel!"
 
 if "!SELECT_CHOICE!"=="1" call :TOGGLE SEL_YEET
@@ -111,7 +113,8 @@ if "!SELECT_CHOICE!"=="11" call :TOGGLE SEL_PARACHUTE
 if "!SELECT_CHOICE!"=="12" call :TOGGLE SEL_TELEPORTPLAYER
 if "!SELECT_CHOICE!"=="13" call :TOGGLE SEL_BIGBACK
 if "!SELECT_CHOICE!"=="14" call :TOGGLE SEL_HIDENSEEK
-if "!SELECT_CHOICE!"=="15" (
+if "!SELECT_CHOICE!"=="15" call :TOGGLE SEL_PERSONVIEW
+if "!SELECT_CHOICE!"=="16" (
     call :BUILD_SELECTION
     if not defined SELECTED_MODS (
         echo.
@@ -122,7 +125,7 @@ if "!SELECT_CHOICE!"=="15" (
     call :RUN_SELECTION Install "!SELECTED_MODS!"
     exit /b !errorlevel!
 )
-if "!SELECT_CHOICE!"=="16" exit /b 0
+if "!SELECT_CHOICE!"=="17" exit /b 0
 goto INSTALL_MENU_LOOP
 
 :UNINSTALL_MENU
@@ -154,11 +157,12 @@ echo   B. [!MARK_PARACHUTE!] MapParachute
 echo   C. [!MARK_TELEPORTPLAYER!] TeleportToPlayer
 echo   D. [!MARK_BIGBACK!] BigBack
 echo   E. [!MARK_HIDENSEEK!] Mady's HideNSeek
+echo   F. [!MARK_PERSONVIEW!] Big Person View
 echo.
 echo   U. UNINSTALL every mod marked [X]
 echo   0. Back
 echo.
-choice /C 123456789ABCDEU0 /N /M "Choose a mod key, U to uninstall, or 0 to go back: "
+choice /C 123456789ABCDEFU0 /N /M "Choose a mod key, U to uninstall, or 0 to go back: "
 set "SELECT_CHOICE=!errorlevel!"
 
 if "!SELECT_CHOICE!"=="1" call :TOGGLE SEL_YEET
@@ -175,7 +179,8 @@ if "!SELECT_CHOICE!"=="11" call :TOGGLE SEL_PARACHUTE
 if "!SELECT_CHOICE!"=="12" call :TOGGLE SEL_TELEPORTPLAYER
 if "!SELECT_CHOICE!"=="13" call :TOGGLE SEL_BIGBACK
 if "!SELECT_CHOICE!"=="14" call :TOGGLE SEL_HIDENSEEK
-if "!SELECT_CHOICE!"=="15" (
+if "!SELECT_CHOICE!"=="15" call :TOGGLE SEL_PERSONVIEW
+if "!SELECT_CHOICE!"=="16" (
     call :BUILD_SELECTION
     if not defined SELECTED_MODS (
         echo.
@@ -186,7 +191,7 @@ if "!SELECT_CHOICE!"=="15" (
     call :RUN_SELECTION Uninstall "!SELECTED_MODS!"
     exit /b !errorlevel!
 )
-if "!SELECT_CHOICE!"=="16" exit /b 0
+if "!SELECT_CHOICE!"=="17" exit /b 0
 goto UNINSTALL_MENU_LOOP
 
 :TOGGLE
@@ -212,6 +217,7 @@ if "!SEL_PARACHUTE!"=="1" (set "MARK_PARACHUTE=X") else (set "MARK_PARACHUTE= ")
 if "!SEL_TELEPORTPLAYER!"=="1" (set "MARK_TELEPORTPLAYER=X") else (set "MARK_TELEPORTPLAYER= ")
 if "!SEL_BIGBACK!"=="1" (set "MARK_BIGBACK=X") else (set "MARK_BIGBACK= ")
 if "!SEL_HIDENSEEK!"=="1" (set "MARK_HIDENSEEK=X") else (set "MARK_HIDENSEEK= ")
+if "!SEL_PERSONVIEW!"=="1" (set "MARK_PERSONVIEW=X") else (set "MARK_PERSONVIEW= ")
 exit /b 0
 
 :BUILD_SELECTION
@@ -230,6 +236,7 @@ if "!SEL_PARACHUTE!"=="1" call :ADD_SELECTED MapParachute
 if "!SEL_TELEPORTPLAYER!"=="1" call :ADD_SELECTED TeleportToPlayer
 if "!SEL_BIGBACK!"=="1" call :ADD_SELECTED BigBack
 if "!SEL_HIDENSEEK!"=="1" call :ADD_SELECTED Madys_HideNSeek
+if "!SEL_PERSONVIEW!"=="1" call :ADD_SELECTED Big_Person_View
 exit /b 0
 
 :ADD_SELECTED

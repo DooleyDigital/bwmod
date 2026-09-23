@@ -619,6 +619,17 @@ function Write-BigWalkControlsNote {
         @{ Name = "Mady's HideNSeek"; Dll = 'Madys_HideNSeek.dll'; Controls = @(
             'F9: Open or close the hide-and-seek menu.',
             'F10: Set up a custom play area.'
+        ) },
+        @{ Name = 'Big Person View'; Dll = 'ThirdPerson.dll'; Controls = @(
+            ']: Cycle first person, behind view, and front view.',
+            ';: Open the settings panel.',
+            '[: Hide or show the HUD.',
+            '\: Toggle free camera. Left Alt + \ locks the camera in place.',
+            'Home: Move your character to the free camera (single player only).',
+            'Page Up / Page Down: Move the camera farther away or closer.',
+            'Arrow keys: Orbit the camera. End resets it.',
+            'Hold Left Alt or Middle Mouse: Orbit with the mouse.',
+            'Free camera: WASD, Space/E up, Left Ctrl/Q down, Shift fast, Z slow.'
         ) }
     )
 
@@ -719,7 +730,8 @@ function Show-BigWalkModStatus {
         @{ Name = 'MapParachute'; Dll = 'Parachute Map.dll' },
         @{ Name = 'TeleportToPlayer'; Dll = 'TeleportToPlayer.dll' },
         @{ Name = 'BigBack'; Dll = 'smolMods.BigBack.dll' },
-        @{ Name = "Mady's HideNSeek"; Dll = 'Madys_HideNSeek.dll' }
+        @{ Name = "Mady's HideNSeek"; Dll = 'Madys_HideNSeek.dll' },
+        @{ Name = 'Big Person View'; Dll = 'ThirdPerson.dll' }
     )) {
         $found = $null
         if (Test-Path -LiteralPath $pluginsFolder) {

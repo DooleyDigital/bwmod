@@ -12,7 +12,8 @@ try {
     $allowedMods = @(
         'BigYeet', 'BigDart', 'BigTeleport', 'BigFirework', 'Madys_MiniMap',
         'NoClip', 'Better_Trains', 'QuickBelt', 'Item_Debug', 'Big_Run',
-        'MapParachute', 'TeleportToPlayer', 'BigBack', 'Madys_HideNSeek'
+        'MapParachute', 'TeleportToPlayer', 'BigBack', 'Madys_HideNSeek',
+        'Big_Person_View'
     )
     $selectedMods = @(
         $Mods.Split(',') |
@@ -93,6 +94,9 @@ try {
                 'Madys_HideNSeek' {
                     Install-ThunderstoreMod -Name 'Madys_HideNSeek' -Namespace 'AdamMady' -DllName 'Madys_HideNSeek.dll' -FallbackVersion '1.0.1'
                 }
+                'Big_Person_View' {
+                    Install-ThunderstoreMod -Name 'Big_Person_View' -Namespace 'SixSevenBrigade' -DllName 'ThirdPerson.dll' -FallbackVersion '1.4.0'
+                }
             }
         }
         else {
@@ -142,6 +146,9 @@ try {
                 }
                 'Madys_HideNSeek' {
                     Uninstall-BigWalkMod -Name 'Madys_HideNSeek' -DllName 'Madys_HideNSeek.dll'
+                }
+                'Big_Person_View' {
+                    Uninstall-BigWalkMod -Name 'Big_Person_View' -DllName 'ThirdPerson.dll' -ConfigPatterns @('*bigwalk*thirdperson*', '*BigPersonView*')
                 }
             }
         }

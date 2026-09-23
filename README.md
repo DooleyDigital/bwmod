@@ -11,7 +11,7 @@ They do **not** need to clone or download the whole repository. The BAT file dow
 - Let the user check exactly which mods to install or update
 - Let the user check exactly which mods to uninstall
 - Start with every mod unchecked so nothing is installed accidentally
-- Offer fourteen independently selectable mods
+- Offer fifteen independently selectable mods
 - Create an installed-mod controls note and a Desktop shortcut to open it in Notepad
 - Remove all BepInEx mods and BepInEx
 - Show the current installation status
@@ -35,10 +35,11 @@ They do **not** need to clone or download the whole repository. The BAT file dow
 | C | TeleportToPlayer | Unchecked | Teleport to a random player and return |
 | D | BigBack | Unchecked | Carry large items in inventory slots; required Core support mod installs automatically |
 | E | Mady's HideNSeek | Unchecked | Host-controlled hide-and-seek mode |
+| F | Big Person View | Unchecked | Third-person, front, free, and locked camera modes |
 
 Every entry is optional. Toggle the checkboxes in the BAT menu before installing.
 
-The selection screen explains that `[X]` means the mod will be installed and `[ ]` means it will be skipped. Press keys `1` through `9` or `A` through `E` to toggle entries, then press `I` to install everything marked `[X]`. The uninstall menu works the same way and uses `U` to remove the checked mods.
+The selection screen explains that `[X]` means the mod will be installed and `[ ]` means it will be skipped. Press keys `1` through `9` or `A` through `F` to toggle entries, then press `I` to install everything marked `[X]`. The uninstall menu works the same way and uses `U` to remove the checked mods.
 
 ## Automatic setup
 
@@ -114,6 +115,7 @@ scripts/
 - [TeleportToPlayer on Thunderstore](https://thunderstore.io/c/big-walk/p/YonahG0y/TeleportToPlayer/)
 - [BigBack on Thunderstore](https://thunderstore.io/c/big-walk/p/gugger/BigBack/)
 - [Mady's HideNSeek on Thunderstore](https://thunderstore.io/c/big-walk/p/AdamMady/Madys_HideNSeek/)
+- [Big Person View on Thunderstore](https://thunderstore.io/c/big-walk/p/SixSevenBrigade/Big_Person_View/)
 - [BepInEx builds](https://builds.bepinex.dev/projects/bepinex_be)
 
 This is an unofficial community utility. Big Walk, BepInEx, Thunderstore, and all listed mods belong to their respective owners.
